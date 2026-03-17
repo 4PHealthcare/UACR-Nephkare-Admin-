@@ -1,0 +1,125 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+
+    <!-- Header -->
+    <div class="relative flex pt-6 px-6 md:px-8">
+        <!-- Title -->
+        <div class="text-4xl font-extrabold tracking-tight">Patient List</div>
+    </div>
+
+    <div
+        class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+        <!-- Search -->
+        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-2/4">
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+            <input matInput (input)="filterData($event.target.value)" [autocomplete]="'off'"
+                [placeholder]="'Search for Patient Name and Phone Number'">
+        </mat-form-field> <!-- Actions -->
+        <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+            <!-- From date picker -->
+            <!-- <form [formGroup]="dateForm">
+                <div class="mx-2 w-1.5/4">
+                    <mat-form-field class="fuse-mat-no-subscript w-full fuse-mat-rounded">
+                        <input matInput formControlName="fromDate" (focus)="fromDatepicker.open()" [matDatepicker]="fromDatepicker"
+                            [placeholder]="'From'">
+                        <mat-datepicker-toggle matSuffix [for]="fromDatepicker">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #fromDatepicker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </form> -->
+
+            <!-- To date picker -->
+            <!-- <form [formGroup]="dateForm">
+                <div class="mx-2">
+                    <mat-form-field class="fuse-mat-no-subscript w-full fuse-mat-rounded">
+                        <input matInput formControlName="toDate" (focus)="toDatepicker.open()" [matDatepicker]="toDatepicker" [placeholder]="'To'">
+                        <mat-datepicker-toggle matSuffix [for]="toDatepicker">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #toDatepicker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </form> -->
+
+            <form [formGroup]="dateForm" class=" ml-2.5">
+                <mat-form-field   class="fuse-mat-no-subscript  fuse-mat-rounded mr-2 mh-40 w-68" floatLabel="always">
+                    
+                      
+                  <mat-date-range-input
+                  separator="to"
+                    [rangePicker]="dateFormpicker"
+                    [comparisonStart]="dateForm.value.start"
+                    [comparisonEnd]="dateForm.value.end"
+                    (click)="dateFormpicker.open()">
+                    
+                    <input matStartDate placeholder="MM/DD/YYYY" formControlName="fromDate">
+                    <input matEndDate placeholder="MM/DD/YYYY" formControlName="toDate">
+                  </mat-date-range-input>
+                  <mat-hint>MM/DD/YYYY to MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matIconSuffix [for]="dateFormpicker"></mat-datepicker-toggle>
+                  <mat-date-range-picker #dateFormpicker></mat-date-range-picker>
+                </mat-form-field>
+                </form>
+            <!-- Add product button -->
+            <button class="ml-4" mat-flat-button class="bg-blue-500 text-white" (click)="downloadData()">
+                <mat-icon [svgIcon]="'heroicons_outline:download'"></mat-icon>
+                <span class="ml-2 mr-1">Download</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-auto overflow-hidden">
+
+        <!-- Users list -->
+        <div class="flex flex-col flex-auto sm:mb-18 overflow-hidden sm:overflow-y-auto">
+            <ng-container *ngIf="(patients$ | async) as patients; else noPatients">
+                <div class="grid">
+                    <!-- Header -->
+                    <div class="inventory-grid z-10 sticky top-0 grid gap-4 py-4 px-6 md:px-8 shadow text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
+                        matSort (matSortChange)="sortData($event)">
+                        <div class="hidden md:block items-center" [mat-sort-header]="'first_name'">Patient Info</div>
+                        <div class="hidden md:block items-center">Phone Number</div>
+                        <div class="hidden md:block items-center">Email</div>
+                        <div class="hidden md:block items-center" [mat-sort-header]="'created_on'">Reg. Date</div>
+                        <div class="hidden lg:block items-center" [mat-sort-header]="'current_statusId'">Status</div>
+                    </div>
+                    <!-- Rows -->
+                    <ng-container *ngIf="(patients$ | async) as patients">
+                        <!-- use Ng for dynmaic data -->
+                        <ng-container *ngFor="let data of patients; trackBy: trackByFn">
+                            <div class="inventory-grid grid items-center gap-4 py-3 px-6 md:px-8 border-b">
+                                <!-- User Info -->
+                                <div>
+                                    <!-- <span class="font-semibold">{{data?.first_name}} {{data?.last_name}}</span> -->
+                                    <span [matTooltip]="data?.full_name.length > 25 ? data?.full_name : ''">{{ (data?.full_name?.length> 25)? (data?.full_name | slice:0:25)+'....':(data?.full_name.trim()) }}</span>
+                                </div>
+                                <!-- Contact Info -->
+                                <div>
+                                    <span>+91 {{addSpace(data?.mobile_no)}}</span>
+                                </div>
+                                <div>{{ data?.email_address }}</div>
+                                <div>{{ data?.created_on | date :'MMM d, y'}}</div>
+                                <!-- Status -->
+                                <div class="text-green-800">Active</div>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+
+                <mat-paginator
+                    class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+                    [ngClass]="{'pointer-events-none': isLoading}" [length]="(totalRecords$ | async)"
+                    [pageIndex]="currentPage" [pageSize]="pageSize" [pageSizeOptions]="[10]"
+                    [showFirstLastButtons]="true" (page)="pageEvent = $event; onPageChange($event)"></mat-paginator>
+            </ng-container>
+
+            <ng-template #noPatients>
+                <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">There are no
+                    users!</div>
+            </ng-template>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,82 @@
+/* ----------------------------------------------------------------------------------------------------- */
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+
+
+.quill-editor-cstm .ql-container  {
+    height: 500px !important;
+}
+
+.quill-editor-cstm .ql-editor {
+    height: 500px;
+    max-height: 500px;
+
+}
+
+.blog-details.prose.prose-sm p{
+    
+    margin-top: 0px;
+    margin-bottom: 0px;
+
+}
+.clr-red{
+    color: rgba(255, 0, 0, 0.836);
+}
+/* Importing Bootstrap SCSS file. */
+@import "~bootstrap/scss/bootstrap";
+
+/* Importing Datepicker SCSS file. */
+@import "~ngx-bootstrap/datepicker/bs-datepicker";
+
+.iti {
+    width: 100% !important;
+}
+ngx-intl-tel-input input {
+	height: 44px;
+	margin-bottom: 20px;
+	padding: 10px;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #c7cace;
+	border-radius: 4px;
+	font-size: 18px;
+}
+
+ngx-intl-tel-input.ng-invalid.ng-touched input {
+	border: 1px solid #c0392b;
+}
+
+ngx-intl-tel-input input:hover {
+	box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.24);
+}
+
+ngx-intl-tel-input input:focus {
+	outline: none !important;
+	border-color: #3498db;
+	box-shadow: 0 0 0 0 #000;
+}
+
+ngx-intl-tel-input input::-webkit-input-placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input:-ms-input-placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input::-ms-input-placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input::placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input[disabled] {
+	background-color: #e5eaf1;
+}
+
+.custom{
+  width: 100%;
+}

@@ -1,0 +1,81 @@
+<div class="h-screen flex flex-col pading-0">
+    <div class="flex flex-row items-center px-6 h-20 min-h-20 text-white bg-primary">
+        <div>{{isupdate ? "Update" : "Add"}} Health Workers</div>
+        <button
+            class="ml-auto"
+            mat-icon-button
+            [matTooltip]="'Close'"
+            (click)="dialogRef.close()">
+            <mat-icon
+                class="text-current"
+                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="p-6 mb-auto overflow-y-auto">
+        <form [formGroup]="workersForm"> 
+            <div>
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>First Name <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'first_name'">
+                </mat-form-field>
+            </div>
+
+            <div class="mt-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Last Name <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'last_name'">
+                </mat-form-field>
+            </div>
+            
+            <div class="mt-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Email <span class="clr-red">*</span></mat-label>
+                    <input 
+                    (input)="onInputChange(workersForm.get('email').value)"
+                    matInput [placeholder]="'Sample@domain.com'" [formControlName]="'email'">
+                </mat-form-field>
+            </div>
+            <div class="mt-5">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Phone Number <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'mobileNumber'">
+                </mat-form-field>
+                <span *ngIf="workersForm.controls.mobileNumber.errors?.required && workersForm.controls.mobileNumber.touched || workersForm.controls.mobileNumber.errors?.pattern"
+                    class="text-red-500 text-xs italic">
+                    Please enter a valid phone number
+                </span>
+            </div>
+
+            <!-- <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Role</mat-label>
+                    <mat-select [formControlName]="'roleId'" disabled>
+                        <ng-container *ngFor="let data of roles">
+                            <mat-option [value]="data.masterdata_id">{{
+                                data.data_name
+                                }}</mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+        </form>
+    </div>
+
+    <footer class="my-4 mx-4">
+        <div class="flex">
+            <div class="flex ml-auto gap-2">
+                <button  mat-flat-button (click)="dialogRef.close()" [disabled]="workersForm.pristine">
+                    <span class="ml-2 mr-1">Cancel</span>
+                </button>
+                <button mat-flat-button [color]="'primary'" (click)="addHelathworkers()" [disabled]="workersForm.invalid || !workersForm.dirty || userActionLoading">
+                    <span class="ml-2 mr-1">{{isupdate ? 'Update' : 'Save'}}</span>
+                    <mat-progress-spinner
+                        *ngIf="userActionLoading"
+                        [diameter]="24"
+                        [mode]="'indeterminate'"></mat-progress-spinner> 
+                </button>
+            </div>
+          </div>          
+    </footer>
+</div>

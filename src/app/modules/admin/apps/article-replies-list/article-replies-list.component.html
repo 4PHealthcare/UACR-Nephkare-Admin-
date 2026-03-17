@@ -1,0 +1,288 @@
+<div class="h-screen flex flex-col">
+    <div
+      class="flex flex-row items-center px-6 h-20 min-h-20 text-white bg-primary"
+    >
+      <div class="text-2xl font-semibold tracking-tight">Thread</div>
+      <button class="ml-auto" mat-icon-button (click)="dialogRef.close()">
+        <mat-icon
+          class="text-current"
+          [svgIcon]="'heroicons_outline:x'"
+        ></mat-icon>
+      </button>
+    </div>
+  
+    <div class="relative flex pl-4 pt-4 pr-4 pb-4 w-full">
+      <!-- <div
+        class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-gray-400"
+      >
+        <img
+          class="rounded-full"
+          *ngIf="data.repliesData.role_id == 1"
+          [src]="
+            data.repliesData.profilephoto_folderpath &&
+            data.repliesData.profilephoto_filename
+              ? host +
+                data.repliesData.profilephoto_folderpath +
+                '/' +
+                data.repliesData.profilephoto_filename
+              : 'assets/images/logo.png'
+          "
+        />
+        <img
+          class="rounded-full"
+          *ngIf="data.repliesData.role_id !== 1"
+          [src]="
+            data.repliesData.profilephoto_folderpath &&
+            data.repliesData.profilephoto_filename
+              ? host +
+                data.repliesData.profilephoto_folderpath +
+                '/' +
+                data.repliesData.profilephoto_filename
+              : 'assets/images/user.png'
+          "
+        />
+      </div> -->
+      <div class="flex flex-col flex-auto items-start">
+        <!-- <div class="ng-star-inserted">
+          <b class="f-sz-16">{{ data.repliesData.full_name }}</b>
+  
+          <span class="text-xs ml-4">
+            {{
+              data.repliesData.created_on | date: " dd MMM, YYYY ; h:mm a"
+            }}</span
+          >
+        </div> -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5"
+        ></div>
+  
+        <div>
+          <img
+            class="image-fit pr-4"
+           
+            [src]="
+              host +
+              data.repliesData.featureimg_folderpath +
+              '/' +
+              data.repliesData.featureimg_filename
+            "
+          />
+  <div class="ng-star-inserted">
+          <b class="f-sz-16">{{ data.repliesData.title }}</b>
+  
+          <span class="text-xs ml-4">
+            {{
+              data.repliesData.modified_on | getTime
+            }}</span
+          >
+        </div>
+          <span *ngIf="data.repliesData.role_id == 1">
+            {{
+              data.repliesData?.feature_text?.length > 150
+                ? (data.repliesData.feature_text | slice: 0:150) + " ..."
+                : data.repliesData.feature_text
+            }}
+          </span>
+  
+          <span
+            *ngIf="data.repliesData.role_id == 1"
+            class="blue-color cursor-pointer"
+            matDialogClose
+            (click)="blogDetails(data.repliesData.article_id)"
+          >
+            read more</span
+          >
+  
+          <!-- for Member -->
+          <span *ngIf="data.repliesData.role_id != 1">
+            {{
+              readMore
+                ? data.repliesData.post_description
+                : (data.repliesData.post_description | slice: 0:150)
+            }}
+            <span *ngIf="!readMore">...</span>
+            <a
+              class="blue-color cursor-pointer"
+              href="javascript:;"
+              *ngIf="!readMore"
+              (click)="readMore = true"
+              >read more</a
+            >
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="pl-4 pt-4 pr-4 pb-4">
+      <b class="dis-float"> {{comments?.length}} reply </b>
+      <hr />
+    </div>
+    <ng-container *ngFor="let comment of comments; trackBy: trackByFn">
+      <div class="relative flex pl-4 pt-4 pr-4 pb-4 w-full" >
+        <div
+          class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-gray-400"
+        >
+          <img class="rounded-full" 
+          [src]="
+          comment.photo_folderpath &&
+          comment.photo_filename
+            ? host +
+            comment.photo_folderpath +
+              '/' +
+              comment.photo_filename
+            : 'assets/images/user.png'
+        "
+  
+          />
+        </div>
+        <div class="flex flex-col flex-auto items-start">
+          <div class="ng-star-inserted">
+            <b class="f-sz-16">{{comment.user_name}}</b>
+    
+            <span class="text-xs ml-4">{{ comment.created_on| getTime }}</span>
+          </div>
+          <div
+            class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5"
+          ></div>
+    
+          <div>
+            <!-- <img
+            class="image-fit pr-4"
+            *ngIf="
+              data.repliesData.articlesMedias && 
+              data.repliesData.articlesMedias[0]
+            "
+            [src]="
+              host +
+              data.repliesData.articlesMedias[0]?.folder_path +
+              '/' +
+              data.repliesData.articlesMedias[0]?.file_name
+            "
+          /> -->
+    
+            <span class="flex"> {{comment.comments_text}}</span>
+          </div>
+        </div>
+  
+        
+  
+        
+       
+      </div>
+      <div class="pl-20">
+        <a class="pr-8 blue-color cursor-pointer" (click)="edit(comment)">Edit</a>
+        <a class="pr-8 blue-color cursor-pointer" (click)="reply(comment)">Reply</a>
+        <a class="blue-color cursor-pointer" (click)="deleteComment(comment)">Delete</a>
+      </div>
+      <ng-container *ngFor="let subComment of comment.articlesSubComments; trackBy: trackByFn">
+        <div class="relative flex pl-20 pt-4 pr-4 pb-4 w-full" >
+          <div
+            class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-gray-400"
+          >
+            <img class="rounded-full" 
+            [src]="
+            subComment.photo_folderpath &&
+            subComment.photo_filename
+              ? host +
+              subComment.photo_folderpath +
+                '/' +
+                subComment.photo_filename
+              : 'assets/images/user.png'
+          "
+    
+            />
+          </div>
+          <div class="flex flex-col flex-auto items-start">
+            <div class="ng-star-inserted">
+              <b class="f-sz-16">{{subComment.user_name}}</b>
+      
+              <span class="text-xs ml-4">{{ subComment.created_on| getTime }}</span>
+            </div>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5"
+            ></div>
+      
+            <div>
+              <!-- <img
+              class="image-fit pr-4"
+              *ngIf="
+                data.repliesData.articlesMedias && 
+                data.repliesData.articlesMedias[0]
+              "
+              [src]="
+                host +
+                data.repliesData.articlesMedias[0]?.folder_path +
+                '/' +
+                data.repliesData.articlesMedias[0]?.file_name
+              "
+            /> -->
+      
+              <span class="flex"> {{subComment.comments_text}}</span>
+            </div>
+          </div>
+    
+          
+    
+          
+         
+        </div>
+        <div class="pl-32">
+          <a class="pr-8 blue-color cursor-pointer" (click)="editsub(subComment, comment)">Edit</a>
+          <a class="pr-8 blue-color cursor-pointer" (click)="reply(comment)">Reply</a>
+          <a class="blue-color cursor-pointer" (click)="deleteComment(subComment)">Delete</a>
+        </div>
+      </ng-container>
+     
+      
+    </ng-container>
+   
+  
+    <!-- Message field -->
+    <div class="flex items-end p-4 border-t bg-gray-50 dark:bg-transparent">  
+
+      
+      <mat-form-field
+        class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded fuse-mat-bold w-full ml-4"
+      >
+      <mat-label  *ngIf="!commentId && subCommentId"><span>Replying to </span><b> {{selectedName}}</b>
+      </mat-label>
+      
+        <textarea
+          class="min-h-5 my-0 resize-none"
+          style="margin: 11px 0 !important; padding: 0 !important"
+          [rows]="1"
+          matInput
+          [(ngModel)]="comment" 
+          #messageInput
+        ></textarea>
+      </mat-form-field>
+      <div class="flex items-center h-11 my-px ml-4">
+        <button mat-icon-button (click)="addComment()" *ngIf="!(commentId || subCommentId)" [disabled]="!comment">
+          <mat-icon
+            class="transform rotate-90"
+            [svgIcon]="'heroicons_outline:paper-airplane'"
+          ></mat-icon>
+        </button>
+      </div>
+      <button
+                class="ml-auto"
+                mat-button
+                *ngIf="commentId || subCommentId"
+                (click)="cancel()"
+              >
+                Cancel
+              </button>
+              <!-- Save -->
+              <button
+              (click)="addComment()"
+              *ngIf="commentId || subCommentId"
+                class="ml-2"
+                mat-flat-button
+                [color]="'primary'"
+               
+  
+              >
+                Save
+              </button>
+    </div>
+  </div>
+  

@@ -1,0 +1,104 @@
+<div class="h-screen flex flex-col">
+    <div class="flex flex-row items-center px-6 h-20 min-h-20 text-white bg-primary">
+        <div>Add Hospital License</div>
+        <button
+            class="ml-auto"
+            mat-icon-button
+            [matTooltip]="'Close'"
+            (click)="dialogRef.close()">
+            <mat-icon
+                class="text-current"
+                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+    <div class="p-6 mb-auto overflow-y-auto">
+        <form [formGroup]="userForm"> 
+            <div>
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Clinic name / Hospital name <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'hospitalName'">
+                </mat-form-field>
+            </div>
+
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Contact Person / Name <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'contactPersonName'">
+                </mat-form-field>
+            </div>
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Speciality <span class="clr-red">*</span></mat-label>
+                    <mat-select [formControlName]="'specialityid'" placeholder="Select">
+                        <ng-container *ngFor="let data of specialities">
+                            <mat-option [value]="data.masterdata_id">{{
+                                data.data_name
+                                }}</mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>City / Area <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'cityName'">
+                </mat-form-field>
+            </div>
+            <!-- <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Last Name</mat-label>
+                    <input matInput [placeholder]="'Last Name'" [formControlName]="'lastName'">
+                </mat-form-field>
+            </div> -->
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Email <span class="clr-red">*</span></mat-label>
+                    <input 
+                    (input)="onInputChange(userForm.get('email').value)"
+                    matInput [placeholder]="'Sample@domain.com'" [formControlName]="'email'">
+                </mat-form-field>
+            </div>
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Phone <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'mobileNumber'">
+                </mat-form-field>
+                <span *ngIf="userForm.controls.mobileNumber.errors?.required && userForm.controls.mobileNumber.touched || userForm.controls.mobileNumber.errors?.pattern"
+                    class="text-red-500 text-xs italic">
+                    Please enter a valid phone number
+                </span>
+            </div>
+            <!-- <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Role</mat-label>
+                    <mat-select [formControlName]="'roleId'" disabled>
+                        <ng-container *ngFor="let data of roles">
+                            <mat-option [value]="data.masterdata_id">{{
+                                data.data_name
+                                }}</mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+        </form>
+    </div>
+
+    <footer class="my-4 mx-4">
+        <div class="flex">
+            <div class="flex ml-auto gap-2">
+                <button  mat-flat-button (click)="dialogRef.close()" [disabled]="userForm.pristine">
+                    <span class="ml-2 mr-1">Cancel</span>
+                </button>
+                <button mat-flat-button [color]="'primary'" (click)="addUser()" [disabled]="userForm.invalid || userActionLoading">
+                    <span class="ml-2 mr-1">Save</span>
+                    <mat-progress-spinner
+                        *ngIf="userActionLoading"
+                        [diameter]="24"
+                        [mode]="'indeterminate'"></mat-progress-spinner> 
+                </button>
+            </div>
+          </div>          
+    </footer>
+</div>

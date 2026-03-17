@@ -1,0 +1,180 @@
+<div class="h-screen flex flex-col">
+    <div class="flex flex-row items-center px-6 h-20 min-h-20 text-white bg-primary">
+        <!-- <div class="text-2xl font-semibold tracking-tight">Add User</div> -->
+        <div *ngIf="data.type === 'Customer Support'">Add Customer Support</div>
+        <div *ngIf="data.type === 'Care Coordinator'">Add Care Coordinator</div>
+        <div *ngIf="data.type === 'Doctor' || data.type === 'HWR'">{{editId?'Update':"Generate"}} License</div>
+        <button
+            class="ml-auto"
+            mat-icon-button
+            [matTooltip]="'Close'"
+            (click)="dialogRef.close()">
+            <mat-icon
+                class="text-current"
+                [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+    <div class="mt-8">
+        <label class="hoverable" for="fileInput" (mouseenter)="onMouseEnter()">
+          <img class="object-cover w-full h-full" [src]="photo ? photo : 'assets/images/avatars/img_avatar.png'"/> 
+         
+          <div class="background"></div>
+          <div (mouseenter)="onMouseEnter()" class=" ml-3 mt-3 flex items-center justify-between"><div class="bg-gy py-0.5 px-3 rounded-full text-sm font-semibold text-pink-800 bg-gray-100 dark:text-pink-50 dark:bg-gray-500 ng-star-inserted"> Upload </div><div class="flex items-center"></div></div>
+        </label>
+        
+        
+        <br/>
+        <input id="fileInput"  type='file' (change)="onSelectFile($event)">
+       <div class="delete-trash">
+       
+       
+      </div>
+      </div>
+    <div class="p-6 mb-auto">
+        <form [formGroup]="userForm">
+            <div *ngIf="type == 'Doctor' || type == 'HWR'">
+              <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Project Name <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'name'">
+                </mat-form-field>
+            </div>  
+            <div class="mt-8" *ngIf="data.type !== 'HWR'">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Speciality <span class="clr-red">*</span></mat-label>
+                    <mat-select [formControlName]="'specialityid'" placeholder="Select">
+                      <ng-container >
+                        
+                          <mat-option [value]="65">Nephrology <span class="clr-red">*</span></mat-option>
+                      </ng-container>
+                  </mat-select>
+                  </mat-form-field>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <mat-label>Phone Number <span class="clr-red">*</span></mat-label>
+                <div class="wrapper">
+                    <ngx-intl-tel-input
+                      [cssClass]="'custom'"
+                      [preferredCountries]="preferredCountries"
+                      [enableAutoCountrySelect]="true"
+                      [enablePlaceholder]="true"
+                      [searchCountryFlag]="true"
+                      [searchCountryField]="[
+                        SearchCountryField.Iso2,
+                        SearchCountryField.Name
+                      ]"
+                      [selectFirstCountry]="false"
+                      [selectedCountryISO]="CountryISO.India"
+                      [maxLength]="15"
+                      [phoneValidation]="true"
+                      [separateDialCode]="separateDialCode"
+                      [numberFormat]="PhoneNumberFormat.National"
+                      name="mobileNumber"
+                      formControlName="mobileNumber"
+                    >
+                    </ngx-intl-tel-input>
+                  </div>
+                <!-- <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Phone Number <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'mobileNumber'">
+                </mat-form-field> -->
+                <span *ngIf="userForm.controls.mobileNumber.errors?.required && userForm.controls.mobileNumber.touched || userForm.controls.mobileNumber.errors?.pattern"
+                    class="text-red-500 text-xs italic">
+                    Please enter a valid phone number
+                </span>
+            </div>
+            
+           
+            <!-- <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Last Name</mat-label>
+                    <input matInput [placeholder]="'Last Name'" [formControlName]="'lastName'">
+                </mat-form-field>
+            </div> -->
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Email <span class="clr-red">*</span></mat-label>
+                    <input 
+                    (input)="onInputChange(userForm.get('email').value)"
+                    matInput [placeholder]="'Sample@domain.com '" [formControlName]="'email'">
+                </mat-form-field>
+            </div>
+            <!-- <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Hospital Name <span class="clr-red" *ngIf="type == 'Doctor'">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'hospitalname'">
+                </mat-form-field>
+            </div> -->
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>City <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'city'">
+                </mat-form-field>
+            </div>
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>State <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'state'">
+                </mat-form-field>
+            </div>
+            <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Country <span class="clr-red">*</span></mat-label>
+                    <input matInput [placeholder]="'Enter'" [formControlName]="'countryname'">
+                </mat-form-field>
+            </div>
+            <!-- <div class="sm:col-span-2 form-group mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                  <mat-label>License Type <span class="clr-red">*</span></mat-label>
+                  <mat-select [formControlName]="'licenceId'" placeholder="Select">
+                    <ng-container *ngFor="let data of subscriptionTypes">
+                      <mat-option [value]="data.masterdata_id">{{data.data_name}}</mat-option>
+                    </ng-container>
+                </mat-select>
+                </mat-form-field>
+              </div> -->
+
+            <!-- <div class="sm:col-span-2 mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                  <mat-label>Duration <span class="clr-red">*</span></mat-label>
+                  <input matInput [placeholder]="'Enter'" [formControlName]="'durationValue'"/>
+                  <mat-select [formControlName]="'durationId'" [placeholder]="'Select'" matSuffix>
+                    <mat-option [value]="data.data_name" *ngFor="let data of durations">{{data.data_name}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div> -->
+            
+            <!-- <div class="mt-8">
+                <mat-form-field class="fuse-mat-no-subscript w-full" floatLabel="always">
+                    <mat-label>Role</mat-label>
+                    <mat-select [formControlName]="'roleId'" disabled>
+                        <ng-container *ngFor="let data of roles">
+                            <mat-option [value]="data.masterdata_id">{{
+                                data.data_name
+                                }}</mat-option>
+                        </ng-container>
+                    </mat-select>
+                </mat-form-field>
+            </div> -->
+        </form>
+    </div>
+
+    <footer class="my-4 mx-4">
+        <div class="flex">
+            <div class="flex ml-auto gap-2">
+                <button  mat-flat-button (click)="userForm.reset()" [disabled]="userForm.pristine">
+                    <span class="ml-2 mr-1">Clear</span>
+                </button>
+                <button mat-flat-button [color]="'primary'" (click)="addUser()" [disabled]="userForm.invalid || userActionLoading">
+                    <span class="ml-2 mr-1">{{editId?'Update':"Create"}}</span>
+                    <mat-progress-spinner
+                        *ngIf="userActionLoading"
+                        [diameter]="24"
+                        [mode]="'indeterminate'"></mat-progress-spinner>
+                </button>
+            </div>
+          </div>          
+    </footer>
+</div>

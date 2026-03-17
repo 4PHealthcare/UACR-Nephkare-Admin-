@@ -1,0 +1,211 @@
+<div class="absolute inset-0 flex flex-col min-w-0 dark:bg-gray-900">
+  <div class="relative flex pt-6 px-6 md:px-8">
+    <div class="text-4xl font-extrabold tracking-tight">Community</div>
+  </div>
+</div>
+<mat-tab-group class="pt-5 absolute w-full h-full">
+  <mat-tab label="Article comments">
+    <ng-template matTabContent class="w-full h-full">
+      <div
+        class="w-full h-full sm:inset-0 min-w-0 bg-card dark:bg-transparent height-calc"
+      >
+        <ng-container *ngIf="blogs$ | async as blogs; else loading">
+          <ng-container *ngIf="blogs.length; else noBlogs">
+            <fuse-masonry
+              class="-mx-2 mt-8"
+              [items]="blogs"
+              [columns]="masonryColumns"
+              [columnsTemplate]="columnsTemplate"
+            >
+              <ng-template #columnsTemplate let-columns>
+                <ng-container
+                  *ngFor="let column of columns; trackBy: trackByFn"
+                >
+                  <div class="px-2 space-y-4">
+                    <ng-container
+                      class=""
+                      *ngFor="let blog of column.items; trackBy: trackByFn"
+                    >
+                      <div class="cursor-pointer bg-card border-btm-grey pb-5">
+                        <!-- <div class="h-40px">
+                          <img
+                          class="rounded-full wh-40 mb-4 "
+                          style="float:left"
+                          [src]="blog.photo_folderpath && blog.photo_filename ? host + blog.photo_folderpath +'/' + blog.photo_filename : 'assets/images/logo.png'"/>
+                          <span class="font-semibold line-clamp-3 pl-2.5 pt-2.5">{{blog.full_name}}</span>
+                        </div> -->
+                        <ng-container *ngIf="blog.img">
+                          
+                          
+                          <img
+                            class="image-fit object-cover"
+                            [src]="blog.img"
+                          />
+                        </ng-container>
+                        <div class="flex flex-auto flex-col p-2 space-y-4">
+                          <ng-container *ngIf="blog.title">
+                            <div class="font-semibold line-clamp-3">
+                              {{ blog.title }}
+                              <span class="text-xs ml-4">
+                                {{ blog.created_on | getTime}}
+                              </span>
+                            </div>
+                          </ng-container>
+
+                          <ng-container *ngIf="blog.feature_text"> 
+                            <div >
+                              {{ blog.feature_text }}
+                              <span
+                              class="blue-color cursor-pointer"
+                              [routerLink]="['/pages/blogs/'+blog.article_id]"
+                              > ...read more</span
+                            >
+                              <!-- {{ (blog?.feature_text?.length>50)? (blog.feature_text | slice:0:50)+' ...':(blog.feature_text) }} -->
+                            </div>
+                            <div class="">
+                              <span
+                                class="blue-color cursor-pointer"
+                                (click)="openArticleReplyModal(blog)"
+                                >{{blog.articclesLikeCommentCount?.comment_count}} replies</span
+                              >
+                              <!-- <span class="pl-6">15 days ago</span> -->
+                            </div>
+                          </ng-container>
+
+                          <!-- <ng-container>
+                                                <div class="mt-0 space-y-0 flex flex-wrap items-center ">
+                                                    <ng-container>
+                                                        <div class="m-1 py-0.5 px-3 rounded-full text-sm font-medium text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
+                                                            {{filterStatus}} 
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="blog.modified_on">
+                                                        <div class="m-1 py-0.5 px-3 items-end rounded-full text-sm font-medium text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
+                                                            {{blog.modified_on | date: 'MMM d, y h:mm a' }} 
+                                                        </div>
+                                                    </ng-container>
+                                                    <ng-container *ngIf="blog.modified_on">
+                                                        <div class="m-3 py-0.5 px-3 items-end rounded-full text-sm font-medium text-gray-500 bg-gray-100 dark:text-gray-300 dark:bg-gray-700"  >
+                                                            <p>Comments: 4</p>
+                                                           
+                                                        </div>
+                                                       
+                                                    </ng-container>
+                                                </div>
+                                                
+                                            </ng-container> -->
+                        </div>
+                        <!-- <div class="pt-8">
+                          <span
+                            class="blue-color cursor-pointer"
+                            (click)="openReplyModal(columns)"
+                            >0 replies</span
+                          >
+                          <span class="pl-6">15 days ago</span>
+                        </div> -->
+                      </div>
+                    </ng-container>
+                  </div>
+                </ng-container>
+              </ng-template>
+            </fuse-masonry>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Post comments">
+    <ng-template
+      matTabContent
+      class="w-full h-full"
+     
+    >
+      <div
+        class="w-full h-4/5	 flex-none	overflow-y-scroll sm:inset-0  min-w-0 bg-card dark:bg-transparent"
+        infinite-scroll
+        [scrollWindow]="false"
+        [infiniteScrollDistance]="2"    
+        [infiniteScrollThrottle]="throttle"    
+        (scrolled)="onScrollDown($event)" 
+        (scrolledUp)="onScrollUp($event)"
+        [callbackUntilScrollable]="true"
+      >
+        <div
+          class="relative flex flex-auto pl-4 pt-4 pr-4 pb-4 w-full border-btm-grey"
+          *ngFor="
+            let community of communities;
+            let i = index;
+            trackBy: trackByFn
+          "
+        >
+          <div
+            class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-gray-400"
+          >
+            <img
+              class="rounded-full"
+              *ngIf="community.role_id == 1"
+              [src]="community.profilephoto_folderpath && community.profilephoto_filename ? host + community.profilephoto_folderpath + '/' + community.profilephoto_filename : 'assets/images/logo.png'"/>
+            <img
+              class="rounded-full"
+              *ngIf="community.role_id !== 1"
+              [src]="
+                community.profilephoto_folderpath &&
+                community.profilephoto_filename
+                  ? host +
+                    community.profilephoto_folderpath +
+                    '/' +
+                    community.profilephoto_filename
+                  : 'assets/images/user.png'
+              "
+            />
+          </div>
+          <div class="flex flex-col flex-auto items-start">
+            <div class="pt-2 ng-star-inserted">
+              <b class="f-sz-16">{{ community.full_name }}</b>
+              <span class="text-xs ml-4">
+                {{
+                  community.created_on | getTime
+                }}</span
+              >
+            </div>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5"
+            >
+              <!-- <div class="text-secondary">{{community.created_on | date: ' dd MMM, YYYY ; h:mm a'}}</div>  -->
+            </div>
+            <!-- <div>
+                <img *ngIf="community.articlesMedias && community.articlesMedias[0]"
+                  [src]="host+community.articlesMedias[0]?.folder_path+'/'+community.articlesMedias[0]?.file_name">
+              </div> -->
+            <div class="pt-4">
+              <img
+                (click)="open(community, i)"
+                class="image-fit pr-4"
+                *ngIf="community.articlesMedias && community.articlesMedias[0]"
+                [src]="
+                  host +
+                  community.articlesMedias[0]?.folder_path +
+                  '/' +
+                  community.articlesMedias[0]?.file_name
+                "
+              />
+              <!-- {{ (community?.post_description?.length>500)? (community.post_description | slice:0:500)+' ...':(community.post_description) }} -->
+              <span class=""> {{ community?.post_description }}</span>
+              <span *ngIf="community.role_id == 1" class="blue-color cursor-pointer" [routerLink]="['/pages/blogs/'+community.blog_id]">...read more</span>
+              
+            </div>
+            <!-- pl-36  -->
+            <div class="pt-4">
+              <span
+                class="blue-color cursor-pointer"
+                (click)="openReplyModal(community)"
+                >{{community.articclesLikeCommentCount?.comment_count}} replies</span
+              >
+              <!-- <span class="pl-6">15 days ago</span> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
