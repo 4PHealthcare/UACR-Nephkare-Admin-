@@ -51,8 +51,8 @@ export class SettingsAccountComponent implements OnInit {
     });
   }
 
-  getUserInfo(userId: number) {
-    this.httpService.get("api/User/GetUsersById?userId=", userId).subscribe(
+  getUserInfo(userId: number) { 
+    this.httpService.getAll(`api/adminstaff/get-adminstaff-by-id/${userId}` ).subscribe( 
       (res: any) => {
         this.accountInfo = res.data;
         this.patchForm(res.data);
@@ -65,9 +65,9 @@ export class SettingsAccountComponent implements OnInit {
 
   patchForm(data: any) {
     this.accountForm.patchValue({
-      name: data.first_name + " " + data.last_name,
-      email: data.email_address,
-      phone: data.mobile_no,
+      name: data.user.fullname,
+      email: data.user.email,
+      phone: data.user.mobile,
     });
   }
 
@@ -77,19 +77,17 @@ export class SettingsAccountComponent implements OnInit {
     const body = {
       userid: this.userInfo.user_id,
       username: this.accountForm.get("email").value,
-      password: "test@1234",
-      firstname: name.length > 2 ? name[0] + ' ' + name[1] : name[0],
-      lastname: name.length > 2 ? name[2] : name[1],
-      emailaddress: this.accountForm.get("email").value,
-      mobileno: this.accountForm.get("phone").value,
+      fullname: this.accountForm.get("name").value,
+      email: this.accountForm.get("email").value,
+      mobile: this.accountForm.get("phone").value,
       roleid: this.accountInfo.role_id,
       actionby: this.userInfo.user_id,
     };
-    this.httpService.create("api/User/UpdateUser", body).subscribe(
+    this.httpService.create("api/adminstaff/save-adminstaff", body).subscribe(
       (res: any) => {
         console.warn(res);
         this.getUserInfo(this.userInfo.user_id);
-        this.SaveActivity();
+        //this.SaveActivity();
         this.snackBar.open('User updated successfully.', 'close', {
           panelClass: "snackBarSuccess",
           duration: 2000,

@@ -68,7 +68,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
     this.getUserInfo(this.userInfo.user_id);
     this.getProjectNames()
     this.project_name ='Hello Kidney';
-    this.getDashboadInfo('HLKD');
+    //this.getDashboadInfo('HLKD');
     // Get the data
     this._projectService.data$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -116,28 +116,28 @@ export class ProjectComponent implements OnInit, OnDestroy {
       });
   }
 
-  getDashboadInfo(appName) {
-    const url = `api/User/GetDashboardStatistics?appname=${appName}`;
-    this.httpService.getAll(url).subscribe((res: any) => {
-      this.dashBoardInfo$.next(res.data);
-      this.weeklyPatientInfo = res.data.patient_info_weekly_registration_graph;
-      this.monthlyPatientInfo =
-        res.data.patient_info_monthly_registration_graph;
-      this.yearlyPatientInfo = res.data.patient_info_yearly_registration_graph;
-      this.overviewData = res.data;
-      this.doctorsInfo = res.data.doctor_weekly_registration_graph;
-      this.patientsCount$.next(res.data.weekly_counts);
-      this.doctorsCount$.next(
-        this.overviewData.doctor_weekly_registration_graph
-      );
-      this.careTeamCount$.next(
-        this.overviewData.careteam_weekly_registration_graph
-      );
-      this.getPatientsInfo(this.selectedPatientInfoType);
-      this.getDoctorsInfo(this.selectedDoctorInfoType);
-      this.getCareTeamInfo(this.selectedCareTeamType);
-    });
-  }
+  // getDashboadInfo(appName) {
+  //   const url = `api/User/GetDashboardStatistics?appname=${appName}`;
+  //   this.httpService.getAll(url).subscribe((res: any) => {
+  //     this.dashBoardInfo$.next(res.data);
+  //     this.weeklyPatientInfo = res.data.patient_info_weekly_registration_graph;
+  //     this.monthlyPatientInfo =
+  //       res.data.patient_info_monthly_registration_graph;
+  //     this.yearlyPatientInfo = res.data.patient_info_yearly_registration_graph;
+  //     this.overviewData = res.data;
+  //     this.doctorsInfo = res.data.doctor_weekly_registration_graph;
+  //     this.patientsCount$.next(res.data.weekly_counts);
+  //     this.doctorsCount$.next(
+  //       this.overviewData.doctor_weekly_registration_graph
+  //     );
+  //     this.careTeamCount$.next(
+  //       this.overviewData.careteam_weekly_registration_graph
+  //     );
+  //     this.getPatientsInfo(this.selectedPatientInfoType);
+  //     this.getDoctorsInfo(this.selectedDoctorInfoType);
+  //     this.getCareTeamInfo(this.selectedCareTeamType);
+  //   });
+  // }
 
   onPatientChange(value: any) {
     this.getPatientsInfo(value);   
@@ -463,9 +463,9 @@ export class ProjectComponent implements OnInit, OnDestroy {
   filterByCategory(ev){
     console.log(ev.value)
     if(ev.value == 'Hello Kidney'){
-      this.getDashboadInfo('HLKD')
+      //this.getDashboadInfo('HLKD')
     }else{
-      this.getDashboadInfo('')
+      //this.getDashboadInfo('')
     }
     
   }

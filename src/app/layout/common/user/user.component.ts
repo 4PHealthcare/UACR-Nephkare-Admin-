@@ -50,6 +50,7 @@ export class UserComponent implements OnInit, OnDestroy
             .subscribe((user: User) => {
                 if(user) {
                     this.user = user;
+                    console.log(this.user)
                 } else {
                     this.user = {
                         user_id:0

@@ -71,13 +71,13 @@ export class SettingsComponent implements OnInit, OnDestroy
             //     title      : 'Notifications',
             //     description: 'Manage when you\'ll be notified on which channels'
             // },
-            {
-                id         : 'team',
-                icon       : 'heroicons_outline:users',
-                title      : 'Team',
-                hide: (this.user.role_id == 1 || this.user.role_id==2) ? false: true,
-                description: 'Manage your existing team and change roles/permissions'
-            }
+            // {
+            //     id         : 'team',
+            //     icon       : 'heroicons_outline:users',
+            //     title      : 'Team',
+            //     hide: (this.user.role_id == 1 || this.user.role_id==2) ? false: true,
+            //     description: 'Manage your existing team and change roles/permissions'
+            // }
         ];
         console.log(this.user.role_id);
 

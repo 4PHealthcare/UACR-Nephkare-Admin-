@@ -7,33 +7,33 @@ import {
   OnInit,
   ViewChild,
   ViewEncapsulation,
-} from '@angular/core';
+} from "@angular/core";
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
-} from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { BehaviorSubject, merge, Observable, Subject } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
-import { fuseAnimations } from '@fuse/animations';
-import { FuseConfirmationService } from '@fuse/services/confirmation';
-import { Doctor} from '../../../admin/apps/doctors/doctors.types';
-import { DoctorService } from '../../../admin/apps/doctors/doctors.service';
-import { ViewDoctorComponent } from '../../../admin/apps/doctors/view-doctor/view-doctor.component';
-import { CustomSnackbarService } from '../../../../core/snackbar/snackbar.service';
-import { APIService } from 'app/core/api/api';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from 'app/core/auth/auth.service';
-import { AddUserModalComponent } from '../add-user-modal/add-user-modal.component';
-import * as XLSX from 'xlsx';
-import moment from 'moment';
-import { Router } from '@angular/router';
-import { MAT_DATE_FORMATS } from '@angular/material/core';
+} from "@angular/forms";
+import { MatCheckboxChange } from "@angular/material/checkbox";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { BehaviorSubject, merge, Observable, Subject } from "rxjs";
+import { MatDialog } from "@angular/material/dialog";
+import { debounceTime, map, switchMap, takeUntil } from "rxjs/operators";
+import { fuseAnimations } from "@fuse/animations";
+import { FuseConfirmationService } from "@fuse/services/confirmation";
+import { Doctor } from "../../../admin/apps/doctors/doctors.types";
+import { DoctorService } from "../../../admin/apps/doctors/doctors.service";
+import { ViewDoctorComponent } from "../../../admin/apps/doctors/view-doctor/view-doctor.component";
+import { CustomSnackbarService } from "../../../../core/snackbar/snackbar.service";
+import { APIService } from "app/core/api/api";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { AuthService } from "app/core/auth/auth.service";
+import { AddUserModalComponent } from "../add-user-modal/add-user-modal.component";
+import * as XLSX from "xlsx";
+import moment from "moment";
+import { Router } from "@angular/router";
+import { MAT_DATE_FORMATS } from "@angular/material/core";
 
 export const MY_FORMATS = {
   parse: {
@@ -47,12 +47,10 @@ export const MY_FORMATS = {
   },
 };
 
-
-
 @Component({
-  selector: 'app-health-workers',
-  templateUrl: './health-workers.component.html',
-  styleUrls: ['./health-workers.component.scss'],
+  selector: "app-health-workers",
+  templateUrl: "./health-workers.component.html",
+  styleUrls: ["./health-workers.component.scss"],
   encapsulation: ViewEncapsulation.None,
 
   styles: [
@@ -71,14 +69,14 @@ export class HealthWorkersComponent implements OnInit {
   adminInfo: any;
   pageSize = 10;
   currentPage = 0;
-  filterVal = '';
+  filterVal = "";
   filterSubject = new Subject();
   totalRecords$ = new BehaviorSubject<any>(null);
   fromDate: Date;
   dateForm: FormGroup;
-  sortDirection = '';
-  sortBy = '';
-  fileName = 'Doctors.xlsx';
+  sortDirection = "";
+  sortBy = "";
+  fileName = "Doctors.xlsx";
   uploadData: any = [];
 
   /**
@@ -91,7 +89,8 @@ export class HealthWorkersComponent implements OnInit {
     private snackBar: MatSnackBar,
     private auth: AuthService,
     private fb: FormBuilder,
-    private route: Router
+    private route: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.adminInfo = JSON.parse(this.auth.adminUser);
   }
@@ -101,52 +100,57 @@ export class HealthWorkersComponent implements OnInit {
    */
   ngOnInit(): void {
     this.initForm();
-      this.getDoctorsList();
-      this.filterSubject
+    this.getDoctorsList();
+    this.filterSubject
       .pipe(
         debounceTime(500),
         map((val) => {
           this.getDoctorsList();
-        })
+        }),
       )
       .subscribe();
   }
 
-  getDoctorsList() {
-    const url = `api/HealthWorker/GetAdminUsers_HWR`;
+  getDoctorsList() { 
+    const url = `api/adminstaff/get-adminstaff`;
     const body = {
-      roleid: 5,
-      appName:'HWR',
+      pageNumber: this.currentPage + 1,
       pageSize: this.pageSize,
-      pageNo: this.currentPage + 1,
-      searchtext: this.filterVal,
-      fromdate: this.dateForm.get('fromDate').value
-        ? moment(this.dateForm.get('fromDate').value).format('YYYY-MM-DD')
-        : null,
-      todate: this.dateForm.get('toDate').value
-        ? moment(this.dateForm.get('toDate').value).format('YYYY-MM-DD')
-        : null,
-      sortBy: this.sortBy,
-      sortDirection: this.sortDirection
+      roleId: 2,
+      // adminAccount: 1,
+      // createdBy: 1,
+       search: this.filterVal,
+      // sortColumn: this.sortBy,
+      // sortOrder: this.sortDirection,
+      // fromDate: this.dateForm.get("fromDate").value
+      //   ? moment(this.dateForm.get("fromDate").value).format("YYYY-MM-DD")
+      //   : null,
+      // toDate: this.dateForm.get("toDate").value
+      //   ? moment(this.dateForm.get("toDate").value).format("YYYY-MM-DD")
+      //   : null,
     };
     this.httpService.create(url, body).subscribe(
       (res: any) => {
         if (res.data) {
           if (this.doctorsList$.value && this.doctorsList$.value.length == 0) {
-            this.doctorsList$.next(res.data.userdata);
+            this.doctorsList$.next(res.data.data);
+            this.cd.detectChanges();
           } else {
-            this.doctorsList$.next([ ...this.doctorsList$.value, ...res.data.userdata]);
+              this.doctorsList$.next([res.data.data]);
+              this.cd.detectChanges();
+
+            
           }
-          this.totalRecords$.next(res.data.totalrecords);
+          this.totalRecords$.next(res.data.totalCount);
         }
-     },
+      },
       (error: any) => {
-      // this.isLoading=false;
-      console.log("error", error);
-    }
+        // this.isLoading=false;
+        console.log("error", error);
+      },
     );
   }
-  
+
   onScroll() {
     this.currentPage = this.currentPage + 1;
     this.getDoctorsList();
@@ -154,8 +158,8 @@ export class HealthWorkersComponent implements OnInit {
 
   initForm() {
     this.dateForm = this.fb.group({
-      fromDate: [''],
-      toDate: [''],
+      fromDate: [""],
+      toDate: [""],
     });
     this.dateForm.valueChanges.subscribe((data: any) => {
       this.getDoctorsList();
@@ -164,12 +168,13 @@ export class HealthWorkersComponent implements OnInit {
   }
 
   deleteSelectedDoctor(data: any): void {
+    console.log(data)
     const confirmation = this._fuseConfirmationService.open({
-      title: 'Delete Doctor',
-      message: 'Are you sure you want to remove? This action cannot be undone!',
+      title: "Delete Doctor",
+      message: "Are you sure you want to remove? This action cannot be undone!",
       actions: {
         confirm: {
-          label: 'Delete',
+          label: "Delete",
         },
       },
     });
@@ -177,41 +182,45 @@ export class HealthWorkersComponent implements OnInit {
     // Subscribe to the confirmation dialog closed action
     confirmation.afterClosed().subscribe((result) => {
       // If the confirm button pressed...
-      if (result === 'confirmed') {
-        const url = `api/User/DeleteUser?userId=${data.user_id}&actionBy=${this.adminInfo.user_id}`;
-        this.httpService.create(url, {}).subscribe(
-      (res: any) => {
-        this.doctorsList$.next([]);
-        this.getDoctorsList();
-        this.SaveActivity(data?.first_name, data?.last_name, 0);
-        this.snackBar.open('User deleted successfully.', 'close', {
-          panelClass: 'snackBarSuccess',
-          duration: 2000,
-        });
-      },
-      (error: any) => {
-        this.snackBar.open(error, 'close', {
-          panelClass: 'snackBarFailure',
-          duration: 2000,
-        });
-      });
+      if (result === "confirmed") {
+        const url = `api/adminstaff/delete-adminstaff/${data.user_id}`;
+        this.httpService.deleteAll(url).subscribe(
+          (res: any) => {
+            this.doctorsList$.next([]);
+            this.getDoctorsList();
+           // this.SaveActivity(data?.first_name, data?.last_name, 0);
+            this.snackBar.open("User deleted successfully.", "close", {
+              panelClass: "snackBarSuccess",
+              duration: 2000,
+            });
+          },
+          (error: any) => {
+            this.snackBar.open(error, "close", {
+              panelClass: "snackBarFailure",
+              duration: 2000,
+            });
+          },
+        );
       }
     });
   }
 
   viewDetails(doctor: Doctor, action: string) {
-    const dialogRef = this.dialog.open(ViewDoctorComponent, {
-      width: '40rem',
-      height: '100%',
-      position: { right: '0' },
-      panelClass: 'view-details-form',
-      data: { doctor, action, type: 'HWR' },
-    }).afterClosed().subscribe((data: any) => {
-      if(data){
-        this.getDoctorsList();
-        this.doctorsList$.next([]);
-      }
-    });
+    const dialogRef = this.dialog
+      .open(ViewDoctorComponent, {
+        width: "40rem",
+        height: "100%",
+        position: { right: "0" },
+        panelClass: "view-details-form",
+        data: { doctor, action, type: "HWR" },
+      })
+      .afterClosed()
+      .subscribe((data: any) => {
+        if (data) {
+          this.getDoctorsList();
+          this.doctorsList$.next([]);
+        }
+      });
   }
 
   changeStatus(data: any) {
@@ -227,26 +236,27 @@ export class HealthWorkersComponent implements OnInit {
 
   updateUserStatus(userId: any, statusId: any) {
     const url = `api/User/UpdateUserStatus?userId=${userId}&statusId=${statusId}`;
-    this.httpService.create(url, {}).subscribe((res: any) => {
-      this.snackBar.open('Status updated successfully.', 'close', {
-        panelClass: "snackBarSuccess",
-        duration: 2000,
-      });
-      this.getDoctorsList();
-    },
-    (error: any) => {
-        console.log('error', error);
-    });
+    this.httpService.create(url, {}).subscribe(
+      (res: any) => {
+        this.snackBar.open("Status updated successfully.", "close", {
+          panelClass: "snackBarSuccess",
+          duration: 2000,
+        });
+        this.getDoctorsList();
+      },
+      (error: any) => {
+        console.log("error", error);
+      },
+    );
   }
 
-
-  openAddUser(data?:any) { 
+  openAddUser(data?: any) {
     this.dialog
       .open(AddUserModalComponent, {
-        width: '25rem',
-        height: '100%',
-        position: { right: '0' },
-        data: { roleId: 5, type: 'HWR', editdata: data}
+        width: "25rem",
+        height: "100%",
+        position: { right: "0" }, 
+        data: { roleId: 5, type: "HWR", editdata: data },
       })
       .afterClosed()
       .subscribe((data) => {
@@ -288,34 +298,28 @@ export class HealthWorkersComponent implements OnInit {
       allrecords: true,
       pageSize: 0,
       pageNo: 0,
-      searchtext: '',
+      searchtext: "",
       fromdate: null,
       todate: null,
-      sortBy: '',
-      sortDirection: '',
+      sortBy: "",
+      sortDirection: "",
     };
     this.httpService.create(url, body).subscribe((res: any) => {
       const usersData = res.data?.userdata;
       if (usersData.length > 0) {
         let doctorsInfo = "Doctors Info";
-            let phoneNumber = "Phone Number";
-            let email = "Email";
-            let rigisterDate = "Register Date";
-            let status = "Status";
-              const headers = [
-                doctorsInfo,
-                phoneNumber,
-                email,
-                rigisterDate,
-                status
-              ];
-          this.uploadData.push(headers);
+        let phoneNumber = "Phone Number";
+        let email = "Email";
+        let rigisterDate = "Register Date";
+        let status = "Status";
+        const headers = [doctorsInfo, phoneNumber, email, rigisterDate, status];
+        this.uploadData.push(headers);
         usersData.map((data: any) => {
-          const fullName = data.first_name + ' ' + data.last_name;
+          const fullName = data.first_name + " " + data.last_name;
           const date = new Date(data.created_on).getDate();
           const month = new Date(data.created_on).getMonth() + 1;
           const year = new Date(data.created_on).getFullYear();
-          const regDate = date + '/' + month + '/' + year;
+          const regDate = date + "/" + month + "/" + year;
           const importData = [
             fullName,
             data.mobile_no,
@@ -327,33 +331,47 @@ export class HealthWorkersComponent implements OnInit {
         });
         const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(this.uploadData);
         const wb: XLSX.WorkBook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
         XLSX.writeFile(wb, this.fileName);
         this.uploadData = [];
       }
     });
   }
 
-  SaveActivity(firstName: string,lastName: string, statusId: any) {
-    const name = firstName +" " + lastName;
+  SaveActivity(firstName: string, lastName: string, statusId: any) {
+    const name = firstName + " " + lastName;
     const body = {
       activityid: 0,
       userid: this.adminInfo.user_id,
-      titlename: statusId === 0 ? "Member removed from the team" : statusId === 27 ? "Member Activated" : "Member Deactivated",
-      descriptionname: statusId === 0 ? "Removed <b>"+ name +" - Researcher" : statusId === 27 ? "You have Activate <b>"+ name +" - Researcher </b>" : "Deactivated <b> "+ name +" - Researcher </b>",
+      titlename:
+        statusId === 0
+          ? "Member removed from the team"
+          : statusId === 27
+            ? "Member Activated"
+            : "Member Deactivated",
+      descriptionname:
+        statusId === 0
+          ? "Removed <b>" + name + " - Researcher"
+          : statusId === 27
+            ? "You have Activate <b>" + name + " - Researcher </b>"
+            : "Deactivated <b> " + name + " - Researcher </b>",
       createdby: this.adminInfo.user_id,
-      categoryname: statusId === 0 ? "DeleteUser" : "UserStatus"
+      categoryname: statusId === 0 ? "DeleteUser" : "UserStatus",
     };
     const url = `api/PatientRegistration/CreateActivity`;
-    this.httpService.create(url, body).subscribe((res: any) => { },
-      (error: any) => { console.log('error', error); });
+    this.httpService.create(url, body).subscribe(
+      (res: any) => {},
+      (error: any) => {
+        console.log("error", error);
+      },
+    );
   }
 
   addSpace(data: any) {
     const formatText = data.match(/.{1,5}/g);
-    return formatText.join(' ');
+    return formatText.join(" ");
   }
-  gotoPatientList(id){
+  gotoPatientList(id) {
     //this.route.navigateByUrl('/hospital-patient-list/:id')
     this.route.navigateByUrl(`/apps/hospital-patient-list?id=${id}`);
   }

@@ -91,13 +91,13 @@ export class AuthService
         //     return throwError('User is already logged in.');
         // }
         let promise = new Promise((resolve, reject) => {
-            this._apiService.create('api/User/Login', credentials)
+            this._apiService.create('api/adminstaff/Stafflogin', credentials)
             .subscribe(
                 result => {
                 
-                   if(result.responseCode==200 && result.data) { role_id: 1
+                   if(result.isSuccess && result.data) { 
 
-                    if(result.data.role_id == 1) {
+                    if(result.data.user.role_id == 1) {
                        // Store the access token in the local storage
                        this.adminAccessToken = result.data.token;
 
@@ -105,8 +105,8 @@ export class AuthService
                        this._authenticated = true;
    
                        // Store the user on the user service
-                       this.adminUser = result.data;
-                       this._userService.user = result.data;
+                       this.adminUser = result.data.user;
+                       this._userService.user = result.data.user;
                        resolve(result);
                     }
                     else{

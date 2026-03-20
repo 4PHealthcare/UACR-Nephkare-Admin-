@@ -27,7 +27,7 @@
     <button mat-menu-item>
         <span class="flex flex-col leading-none">
             <span>Signed in as</span>
-            <span class="mt-1.5 text-md font-bold">{{user?.role_name}}</span>
+            <span *ngIf="user?.role_id == 1" class="mt-1.5 text-md font-bold">Super Admin</span>
         </span>
     </button>
     <mat-divider class="my-2"></mat-divider>
@@ -39,11 +39,11 @@
         <mat-icon [svgIcon]="'heroicons_outline:cog'"></mat-icon>
         <span>Settings</span>
     </button>
-    <button
+    <!-- <button
         mat-menu-item (click)="goToActivities()">
         <mat-icon [svgIcon]="'heroicons_outline:dots-circle-horizontal'"></mat-icon>
         <span>Activities</span>
-    </button>
+    </button> -->
     <mat-divider class="my-2"></mat-divider>
     <button
         mat-menu-item
